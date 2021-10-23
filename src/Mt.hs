@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFunctor              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Mt where
@@ -42,7 +42,7 @@ instance Monad m => Monad (ErrorC e m) where
   a >>= b = ErrorC $ do
     a' <- runErrorC a
     case a' of
-      Left e -> return (Left e)
+      Left e   -> return (Left e)
       Right ra -> runErrorC $ b ra
 
 type TE s a = StateC s (ErrorC String (StateC s (StateC s (StateC s IO)))) a

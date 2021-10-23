@@ -1,21 +1,21 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE KindSignatures   #-}
+{-# LANGUAGE TemplateHaskell  #-}
 {-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module MyLib where
 
-import Control.Algebra
-import Control.Carrier.Error.Either
-import Control.Carrier.Lift
-import Control.Carrier.Reader
-import Control.Carrier.State.Strict
-import Control.Effect.Optics
-import Control.Monad.IO.Class
-import Data.Kind
-import Optics
+import           Control.Algebra
+import           Control.Carrier.Error.Either
+import           Control.Carrier.Lift
+import           Control.Carrier.Reader
+import           Control.Carrier.State.Strict
+import           Control.Effect.Optics
+import           Control.Monad.IO.Class
+import           Data.Kind
+import           Optics
 
 data Position = Position
   { _px :: Int,
@@ -24,11 +24,11 @@ data Position = Position
   deriving (Show)
 
 data Person = Person
-  { _name :: String,
-    _age :: Int,
-    _position :: Position,
+  { _name      :: String,
+    _age       :: Int,
+    _position  :: Position,
     _classname :: String,
-    _teachers :: [String]
+    _teachers  :: [String]
   }
   deriving (Show)
 
@@ -38,10 +38,15 @@ makeLenses ''Person
 initPerson = Person "yang" 23 (Position 10 30) "c4" ["a", "b"]
 
 t ::
-  (Has (Reader Int :+: State Int :+: Error Int :+: State Person) sig m, MonadIO m) => m ()
+     (Has (Reader Int :+:
+           State  Int :+:
+           Error  Int :+:
+           State Person) sig m,
+      MonadIO m)
+  => m ()
 t = do
   r <- ask @Int
-  if (r >= 10)
+  if r >= 10
     then return ()
     else do
       p <- get @Person

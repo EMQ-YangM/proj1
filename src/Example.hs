@@ -1,23 +1,23 @@
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE DeriveFunctor              #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TypeApplications           #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Example where
 
-import Control.Algebra
-import Control.Carrier.Error.Either
-import Control.Carrier.Lift
-import Control.Carrier.State.Strict
-import Control.Carrier.Writer.Strict
+import           Control.Algebra
+import           Control.Carrier.Error.Either
+import           Control.Carrier.Lift
+import           Control.Carrier.State.Strict
+import           Control.Carrier.Writer.Strict
 import qualified Control.Effect.Exception as E
-import Control.Exception
-import Control.Monad
-import Control.Monad.IO.Class
-import Data.Kind
+import           Control.Exception
+import           Control.Monad
+import           Control.Monad.IO.Class
+import           Data.Kind
 import qualified GHC.IO.Exception as IOE
 
 foo :: (Has (State Int :+: Writer String :+: Error Int) sig m, MonadIO m) => m ()
@@ -93,7 +93,7 @@ discardsState0 :: IO Char
 discardsState0 =
   execState
     'a'
-    ( (put 'b' >> E.throwIO (IOE.userError "urk") `E.finally` put @Char 'z')
+    ( (put 'b' >> E.throwIO (IOE.userError "urk") )
         `E.catch` (\(_ :: IOException) -> pure ())
     )
 
