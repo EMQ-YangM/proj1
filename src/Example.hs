@@ -105,13 +105,13 @@ specInput :: (Has (Error SControl :+: State Int :+: Writer String) sig m, MonadI
 specInput = do
   catchError @SControl
     ( do
-        forM_ [1 .. 4] $ \i -> do
-          liftIO $ print $ "input number " ++ show i
-          r <- liftIO getLine
-          when (r /= show i) (throwError SControl)
-          tell (show i ++ " - ") >> modify @Int (+ i)
+        forM_ [1 .. 4] $ \i -> do                       -- 这段代码处于catchError之中，如果在这段代码中抛异常（throwError ),那么这段代码中产生的状态应该怎么处理。
+          liftIO $ print $ "input number " ++ show i    -- 我想这里原本就应该存在两种可能。一种是产生的状态依旧存在，另一种是产生的状态被回滚（就好像这些产生状态的操作都失败了）。
+          r <- liftIO getLine                           -- 于是在这里对StateC 和 ErrorC 两种的不同组合正是代表这两种情况。
+          when (r /= show i) (throwError SControl)      -- 我们这里使用的就是状态回滚的语义,这里状态的操作具有原子性,因此可以重试整个操作。注意这里的IO操作一定不会也不能被回滚，因为IO一定在ErrorC外面。
+          tell (show i) >> modify @Int (+ i)            -- 这里带有范围的副作用操作和单子栈不同组合顺序互相作用，产生了非常有趣的效果。
     )
-    (const specInput)
+    (\_ -> specInput)
 
 runSpecInput :: IO (Either SControl (Int, (String, ())))
 runSpecInput = runM @IO $ runError @SControl $ runState @Int 0 $ runWriter @String specInput
